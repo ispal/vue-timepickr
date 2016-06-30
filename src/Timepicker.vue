@@ -48,8 +48,17 @@ $time-bg: #3DCCC7;
     display: flex;
     justify-content: center;
     font-size: 40px;
+    color: #fff;
     line-height: 1;
     padding: 10px;
+  }
+
+  &__unit {
+    padding: 0 2px;
+  }
+
+  &__separator {
+    padding: 0 10px;
   }
 
   &__digits {
