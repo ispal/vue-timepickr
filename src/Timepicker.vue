@@ -1,36 +1,120 @@
 <template>
-  <div class="timepicker">
+  <div class="timepicker" tabindex="0" 
+      @keyup.right="goToNext()"
+      @keyup.left="goToPrevious()"
+  >
     <div class="timepicker__header">
       Set time
     </div>
     <div class="timepicker__time">
-       <div class="timepicker__unit">1</div>
-       <div class="timepicker__unit">2</div>
+       <div class="timepicker__unit">{{ splittedTime[0] }}</div>
+       <div class="timepicker__unit">{{ splittedTime[1] }}</div>
        <div class="timepicker__separator">:</div>
-       <div class="timepicker__unit">3</div>
-       <div class="timepicker__unit">4</div>
-       <div class="timepicker__active-bg" style="transform:translate({{ activeIndex * 30 }}px, 0)"></div>
+       <div class="timepicker__unit">{{ splittedTime[2] }}</div>
+       <div class="timepicker__unit">{{ splittedTime[3] }}</div>
+      <active-background :active-index="activeIndex"></active-background>
     </div>
     <div class="timepicker__digits">
-      <div 
+      <button 
         class="timepicker__digit" 
-        v-for="digit in digits" 
-        :class="{ 'is-disabled': digit == 2}"
-        @click="activeIndex = $index"
+        v-for="digit in filteredDigits" 
+        :class="{ 'is-disabled': !digit.active }"
+        @click="digitSelected(digit)"
         >
-        {{ digit }}
-      </div>
+        {{{ digit.value }}}
+      </button>
+    </div>
+    <div class="timepicker__arrows">
+      <button 
+        class="timepicker__digit"
+        :class="{ 'is-disabled': activeIndex <= 0 }"
+        @click="goToPrevious()"
+      >&#9664;</button>
+      <button 
+        class="timepicker__digit"
+        :class="{ 'is-disabled': activeIndex > 2 }"
+        @click="goToNext()"
+      >&#9658;</button>
     </div>
   </div>
 </template>
 
 <script>
+import ActiveBackground from 'components/ActiveBackground';
+
+let digits = [
+  { value: 1, active: true },
+  { value: 2, active: true },
+  { value: 3, active: true },
+  { value: 4, active: true },
+  { value: 5, active: true },
+  { value: 6, active: true },
+  { value: 7, active: true },
+  { value: 8, active: true },
+  { value: 9, active: true },
+  { value: 0, active: true }
+];
+
+function contains (array, value) {
+  return array.indexOf(value) >= 0;
+}
+
+function filterAvailableDigits (allDigits, availableDigits) {
+  allDigits.forEach(item => {
+    item.active = contains(availableDigits, item.value);
+  });
+  console.log(allDigits);
+  return allDigits;
+}
+
 export default {
+  props: ['value'],
+  components: {
+    ActiveBackground
+  },
   data () {
     return {
-      digits: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
-      activeIndex: 0
+      activeIndex: 0,
+      time: null,
+      digits: digits
     };
+  },
+  created () {
+    this.time = this.value;
+  },
+  computed: {
+    splittedTime () {
+      return this.value.replace(':', '').split('');
+    },
+    filteredDigits () {
+      if (this.activeIndex === 0) {
+        return filterAvailableDigits(digits, [0, 1, 2]);
+      }
+      if (this.activeIndex === 1) {
+        return filterAvailableDigits(digits, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      }
+      if (this.activeIndex === 2) {
+        return filterAvailableDigits(digits, [0, 1, 2, 3, 4, 5, 6]);
+      }
+      if (this.activeIndex === 3) {
+        return filterAvailableDigits(digits, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      }
+    }
+  },
+  methods: {
+    digitSelected () {
+      this.value = '1345';
+    },
+    goToNext () {
+      if (this.activeIndex < 3) {
+        this.activeIndex++;
+      }
+    },
+    goToPrevious () {
+      if (this.activeIndex > 0) {
+        this.activeIndex--;
+      }
+    }
   }
 };
 </script>
@@ -44,6 +128,7 @@ $border-radius: 3px;
 
 
 .timepicker {
+  position: relative;
   background: #FBFBFF;
   width: 250px;
   box-shadow: 0 3px 10px rgba(0,0,0,.3);
@@ -94,6 +179,22 @@ $border-radius: 3px;
     display: flex;
     flex-wrap: wrap;
     padding: 5px 20px;
+
+    .timepicker__digit:last-of-type {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  &__arrows {
+    display: flex;
+    flex-wrap: wrap;
+    position: absolute;
+    padding: 5px 20px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    justify-content: space-between;
   }
 
   &__digit {
@@ -101,8 +202,13 @@ $border-radius: 3px;
     padding: 15px 0;
     text-align: center;
     color: $digit-color;
+    background: none;
+    border: none;
+    font-size: 16px;
     font-weight: 600;
+    line-height: 1.3;
     cursor: pointer;
+    transition: color .2s ease;
 
     &.is-disabled {
       color: rgba($digit-color, 0.6);
