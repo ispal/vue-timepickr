@@ -7,11 +7,11 @@
       Set time
     </div>
     <div class="timepicker__time">
-       <div class="timepicker__unit">{{ splittedTime[0] }}</div>
-       <div class="timepicker__unit">{{ splittedTime[1] }}</div>
-       <div class="timepicker__separator">:</div>
-       <div class="timepicker__unit">{{ splittedTime[2] }}</div>
-       <div class="timepicker__unit">{{ splittedTime[3] }}</div>
+      <div class="timepicker__unit">{{ timeParts[0] }}</div>
+      <div class="timepicker__unit">{{ timeParts[1] }}</div>
+      <div class="timepicker__separator">:</div>
+      <div class="timepicker__unit">{{ timeParts[2] }}</div>
+      <div class="timepicker__unit">{{ timeParts[3] }}</div>
       <active-background :active-index="activeIndex"></active-background>
     </div>
     <div class="timepicker__digits">
@@ -19,7 +19,8 @@
         class="timepicker__digit" 
         v-for="digit in filteredDigits" 
         :class="{ 'is-disabled': !digit.active }"
-        @click="digitSelected(digit)"
+        :disabled="!digit.active"
+        @click="digitSelected(digit.value)"
         >
         {{{ digit.value }}}
       </button>
@@ -63,7 +64,6 @@ function filterAvailableDigits (allDigits, availableDigits) {
   allDigits.forEach(item => {
     item.active = contains(availableDigits, item.value);
   });
-  console.log(allDigits);
   return allDigits;
 }
 
@@ -80,11 +80,11 @@ export default {
     };
   },
   created () {
-    this.time = this.value;
+    this.time = this.value.replace(':', '').split('');
   },
   computed: {
-    splittedTime () {
-      return this.value.replace(':', '').split('');
+    timeParts () {
+      return this.time;
     },
     filteredDigits () {
       if (this.activeIndex === 0) {
@@ -102,8 +102,8 @@ export default {
     }
   },
   methods: {
-    digitSelected () {
-      this.value = '1345';
+    digitSelected (digit) {
+      this.time.$set(this.activeIndex, digit);
     },
     goToNext () {
       if (this.activeIndex < 3) {
