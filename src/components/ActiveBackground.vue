@@ -10,7 +10,7 @@ export default {
       let singleDigitWidth = 32;
       return this.activeIndex < 2
               ? this.activeIndex * singleDigitWidth
-              : this.activeIndex * singleDigitWidth + 44;
+              : this.activeIndex * singleDigitWidth + 42;
     }
   }
 };

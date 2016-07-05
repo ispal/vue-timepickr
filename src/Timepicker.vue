@@ -2,16 +2,34 @@
   <div class="timepicker" tabindex="0" 
       @keyup.right="goToNext()"
       @keyup.left="goToPrevious()"
+      @keyup.1="goToPrevious()"
+      v-numpad
   >
     <div class="timepicker__header">
       Set time
     </div>
     <div class="timepicker__time">
-      <div class="timepicker__unit">{{ timeParts[0] }}</div>
-      <div class="timepicker__unit">{{ timeParts[1] }}</div>
+      <div class="timepicker__unit">
+        <input type="text" readonly="true" value="{{ timeParts[0] }}"
+          @click="setActiveIndex(0)"
+        >
+      </div>
+      <div class="timepicker__unit">
+        <input type="text" readonly="true" class="timepicker__unit" value="{{ timeParts[1] }}"
+          @click="setActiveIndex(1)"
+        >
+      </div>
       <div class="timepicker__separator">:</div>
-      <div class="timepicker__unit">{{ timeParts[2] }}</div>
-      <div class="timepicker__unit">{{ timeParts[3] }}</div>
+      <div class="timepicker__unit">
+        <input type="text" readonly="true" class="timepicker__unit" value="{{ timeParts[2] }}"
+          @click="setActiveIndex(2)"
+        >
+      </div>
+      <div class="timepicker__unit">
+        <input type="text" readonly="true" class="timepicker__unit" value="{{ timeParts[3] }}"
+          @click="setActiveIndex(3)"
+        >
+      </div>
       <active-background :active-index="activeIndex"></active-background>
     </div>
     <div class="timepicker__digits">
@@ -22,18 +40,20 @@
         :disabled="!digit.active"
         @click="digitSelected(digit.value)"
         >
-        {{{ digit.value }}}
+        {{ digit.value }}
       </button>
     </div>
     <div class="timepicker__arrows">
       <button 
         class="timepicker__digit"
         :class="{ 'is-disabled': activeIndex <= 0 }"
+        :disabled="activeIndex <= 0"
         @click="goToPrevious()"
       >&#9664;</button>
       <button 
         class="timepicker__digit"
         :class="{ 'is-disabled': activeIndex > 2 }"
+        :disabled="activeIndex > 2"
         @click="goToNext()"
       >&#9658;</button>
     </div>
@@ -91,10 +111,14 @@ export default {
         return filterAvailableDigits(digits, [0, 1, 2]);
       }
       if (this.activeIndex === 1) {
+        console.log(this.time[this.activeIndex]);
+        if (this.time[0] === 2) {
+          return filterAvailableDigits(digits, [0, 1, 2, 3]);
+        }
         return filterAvailableDigits(digits, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
       }
       if (this.activeIndex === 2) {
-        return filterAvailableDigits(digits, [0, 1, 2, 3, 4, 5, 6]);
+        return filterAvailableDigits(digits, [0, 1, 2, 3, 4, 5]);
       }
       if (this.activeIndex === 3) {
         return filterAvailableDigits(digits, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
@@ -104,6 +128,10 @@ export default {
   methods: {
     digitSelected (digit) {
       this.time.$set(this.activeIndex, digit);
+      this.goToNext();
+    },
+    setActiveIndex (index) {
+      this.activeIndex = index;
     },
     goToNext () {
       if (this.activeIndex < 3) {
@@ -125,6 +153,7 @@ $time-bg: lighten($header-bg, 10%);
 $active-unit-bg: $header-bg;
 $digit-color: #757575;
 $border-radius: 3px;
+$input-width: 30px;
 
 
 .timepicker {
@@ -149,19 +178,32 @@ $border-radius: 3px;
     font-size: 50px;
     color: #fff;
     line-height: 1;
-    padding: 15px 10px;
+    padding: 12px 10px;
   }
 
-  &__unit {
+  input {
     z-index: 2;
+    color: #fff;
+    font-size: 50px;
+    line-height: 50px;
+    text-align: center;
+    width: $input-width;
+    height: 50px;
     position: relative;
-    padding: 0 2px;
+    background: transparent;
+    border: none;
+    outline: none;
+
+    &:focus,
+    &:active {
+      background: transparent;
+    }
   }
 
   &__active-bg {
     position: absolute;
-    top: 20px;
-    left: 40px;
+    top: 18px;
+    left: 41px;
     width: 30px;
     height: 42px;
     background: $active-unit-bg;
@@ -208,10 +250,10 @@ $border-radius: 3px;
     font-weight: 600;
     line-height: 1.3;
     cursor: pointer;
-    transition: color .2s ease;
+    transition: color .3s ease;
 
     &.is-disabled {
-      color: rgba($digit-color, 0.6);
+      color: rgba($digit-color, 0.3);
     }
   }
 }
