@@ -111,7 +111,6 @@ export default {
         return filterAvailableDigits(digits, [0, 1, 2]);
       }
       if (this.activeIndex === 1) {
-        console.log(this.time[this.activeIndex]);
         if (this.time[0] === 2) {
           return filterAvailableDigits(digits, [0, 1, 2, 3]);
         }
@@ -186,6 +185,7 @@ $input-width: 30px;
     color: #fff;
     font-size: 50px;
     line-height: 50px;
+    padding: 0 2px;
     text-align: center;
     width: $input-width;
     height: 50px;
@@ -202,9 +202,9 @@ $input-width: 30px;
 
   &__active-bg {
     position: absolute;
-    top: 18px;
-    left: 41px;
-    width: 30px;
+    top: 17px;
+    left: 42px;
+    width: $input-width;
     height: 42px;
     background: $active-unit-bg;
     transition: transform .3s ease;
@@ -213,7 +213,9 @@ $input-width: 30px;
   &__separator {
     z-index: 2;
     position: relative;
-    padding: 0 15px;
+    width: $input-width;
+    padding: 0 2px;
+    text-align: center;
     font-size: 90%;
   }
 
