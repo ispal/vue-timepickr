@@ -3,33 +3,16 @@
       @keyup.right="goToNext()"
       @keyup.left="goToPrevious()"
       @keyup.1="goToPrevious()"
-      v-numpad
   >
     <div class="timepicker__header">
       Set time
     </div>
     <div class="timepicker__time">
-      <div class="timepicker__unit">
-        <input type="text" readonly="true" value="{{ timeParts[0] }}"
-          @click="setActiveIndex(0)"
-        >
-      </div>
-      <div class="timepicker__unit">
-        <input type="text" readonly="true" class="timepicker__unit" value="{{ timeParts[1] }}"
-          @click="setActiveIndex(1)"
-        >
-      </div>
+      <time-unit :value="timeParts[0]" index="0" :on-click="setActiveIndex"></time-unit>
+      <time-unit :value="timeParts[1]" index="1" :on-click="setActiveIndex"></time-unit>
       <div class="timepicker__separator">:</div>
-      <div class="timepicker__unit">
-        <input type="text" readonly="true" class="timepicker__unit" value="{{ timeParts[2] }}"
-          @click="setActiveIndex(2)"
-        >
-      </div>
-      <div class="timepicker__unit">
-        <input type="text" readonly="true" class="timepicker__unit" value="{{ timeParts[3] }}"
-          @click="setActiveIndex(3)"
-        >
-      </div>
+      <time-unit :value="timeParts[2]" index="2" :on-click="setActiveIndex"></time-unit>
+      <time-unit :value="timeParts[3]" index="3" :on-click="setActiveIndex"></time-unit>
       <active-background :active-index="activeIndex"></active-background>
     </div>
     <div class="timepicker__digits">
@@ -61,9 +44,12 @@
 </template>
 
 <script>
-import ActiveBackground from 'components/ActiveBackground';
+import KeyboardEvents from './mixins/KeyboardEvents';
 
-let digits = [
+import ActiveBackground from 'components/ActiveBackground';
+import TimeUnit from 'components/TimeUnit';
+
+const digits = [
   { value: 1, active: true },
   { value: 2, active: true },
   { value: 3, active: true },
@@ -89,8 +75,10 @@ function filterAvailableDigits (allDigits, availableDigits) {
 
 export default {
   props: ['value'],
+  mixins: [KeyboardEvents],
   components: {
-    ActiveBackground
+    ActiveBackground,
+    TimeUnit
   },
   data () {
     return {
@@ -126,11 +114,13 @@ export default {
   },
   methods: {
     digitSelected (digit) {
+      let availableNumbers = this.filteredDigits.map(item => item.value);
+      console.log(availableNumbers);
       this.time.$set(this.activeIndex, digit);
       this.goToNext();
     },
     setActiveIndex (index) {
-      this.activeIndex = index;
+      this.activeIndex = parseInt(index);
     },
     goToNext () {
       if (this.activeIndex < 3) {
@@ -153,7 +143,6 @@ $active-unit-bg: $header-bg;
 $digit-color: #757575;
 $border-radius: 3px;
 $input-width: 30px;
-
 
 .timepicker {
   position: relative;
@@ -180,26 +169,6 @@ $input-width: 30px;
     padding: 12px 10px;
   }
 
-  input {
-    z-index: 2;
-    color: #fff;
-    font-size: 50px;
-    line-height: 50px;
-    padding: 0 2px;
-    text-align: center;
-    width: $input-width;
-    height: 50px;
-    position: relative;
-    background: transparent;
-    border: none;
-    outline: none;
-
-    &:focus,
-    &:active {
-      background: transparent;
-    }
-  }
-
   &__active-bg {
     position: absolute;
     top: 17px;
@@ -207,7 +176,7 @@ $input-width: 30px;
     width: $input-width;
     height: 42px;
     background: $active-unit-bg;
-    transition: transform .3s ease;
+    transition: transform .4s ease;
   }
 
   &__separator {
