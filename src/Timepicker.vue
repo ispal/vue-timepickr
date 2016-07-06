@@ -114,8 +114,6 @@ export default {
   },
   methods: {
     digitSelected (digit) {
-      let availableNumbers = this.filteredDigits.map(item => item.value);
-      console.log(availableNumbers);
       this.time.$set(this.activeIndex, digit);
       this.goToNext();
     },

@@ -25,9 +25,13 @@ export default {
       let numberCodes = Object.values(keyCodes);
       let numberKeys = Object.keys(keyCodes);
       let keyIndex = numberCodes.indexOf(e.keyCode);
+      let numberPressed = numberKeys[keyIndex];
+      let availableNumbers = this.filteredDigits
+                                .filter(digit => digit.active)
+                                .map(item => item.value);
 
-      if (keyIndex > -1) {
-        this.digitSelected(numberKeys[keyIndex]);
+      if (keyIndex > -1 && availableNumbers.indexOf(parseInt(numberPressed)) > -1) {
+        this.digitSelected(numberPressed);
       }
     }
   }
