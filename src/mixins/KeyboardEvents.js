@@ -11,13 +11,21 @@ const keyCodes = {
   9: 57
 };
 
+function availableNumbers (numbers) {
+  return numbers
+          .filter(digit => digit.active)
+          .map(item => item.value);
+}
+
 export default {
   ready () {
     this.$el.addEventListener('keyup', this.numbersClicked);
+    this.$el.addEventListener('keydown', this.numberPressed);
   },
 
   beforeDestroy () {
     this.$el.removeEventListener('keyup');
+    this.$el.removeEventListener('keydown');
   },
 
   methods: {
@@ -25,13 +33,21 @@ export default {
       let numberCodes = Object.values(keyCodes);
       let numberKeys = Object.keys(keyCodes);
       let keyIndex = numberCodes.indexOf(e.keyCode);
-      let numberPressed = numberKeys[keyIndex];
-      let availableNumbers = this.filteredDigits
-                                .filter(digit => digit.active)
-                                .map(item => item.value);
+      let numberPressed = parseInt(numberKeys[keyIndex]);
 
-      if (keyIndex > -1 && availableNumbers.indexOf(parseInt(numberPressed)) > -1) {
+      if (availableNumbers(this.filteredDigits).indexOf(numberPressed) > -1) {
         this.digitSelected(numberPressed);
+      }
+    },
+    numberPressed (e) {
+      let numberCodes = Object.values(keyCodes);
+      let numberKeys = Object.keys(keyCodes);
+      let keyIndex = numberCodes.indexOf(e.keyCode);
+      let numberPressed = parseInt(numberKeys[keyIndex]);
+      availableNumbers(this.filteredDigits);
+
+      if (availableNumbers(this.filteredDigits).indexOf(numberPressed) > -1) {
+        this.digitPressed(numberPressed);
       }
     }
   }
