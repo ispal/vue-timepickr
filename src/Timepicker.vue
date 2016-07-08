@@ -88,6 +88,7 @@ $border-radius: 3px;
 $input-width: 34px;
 
 .timepicker-wrap {
+  display: inline-block;
   position: relative;
 
   *, *::after, *::before {
