@@ -1,6 +1,6 @@
 {
   "name": "vue-timepickr",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Timepicker component for Vue.js",
   "author": "Irko Palenius",
   "main": "dist/vue-timepickr.js",
