@@ -1,4 +1,6 @@
-const keyCodes = {
+import { activeNumbers } from '../helpers';
+
+const numberKeyCodes = {
   0: 48,
   1: 49,
   2: 50,
@@ -11,16 +13,35 @@ const keyCodes = {
   9: 57
 };
 
-function availableNumbers (numbers) {
-  return numbers
-          .filter(digit => digit.active)
-          .map(item => item.value);
+const arrowKeyCodes = {
+  'left': 37,
+  'right': 39,
+  'up': 38,
+  'down': 40
+};
+
+function isNumberPressed (keyCode, numberKeyCodes) {
+  return Object.values(numberKeyCodes).indexOf(keyCode) > -1;
+}
+
+function getNumberPressed (keyCode, numberKeyCodes) {
+  let keyIndex = Object.values(numberKeyCodes).indexOf(keyCode);
+  return parseInt(Object.keys(numberKeyCodes)[keyIndex]);
+}
+
+function getArrowPressed (keyCode, numberKeyCodes) {
+  let keyIndex = Object.values(numberKeyCodes).indexOf(keyCode);
+  return Object.keys(numberKeyCodes)[keyIndex];
+}
+
+function isArrowPressed (keyCode, arrowKeyCodes) {
+  return Object.values(arrowKeyCodes).indexOf(keyCode) > -1;
 }
 
 export default {
   ready () {
-    this.$el.addEventListener('keyup', this.numbersClicked);
-    this.$el.addEventListener('keydown', this.numberPressed);
+    this.$el.addEventListener('keyup', this.onKeyUp);
+    this.$el.addEventListener('keydown', this.onKeyPressed);
   },
 
   beforeDestroy () {
@@ -29,25 +50,40 @@ export default {
   },
 
   methods: {
-    numbersClicked (e) {
-      let numberCodes = Object.values(keyCodes);
-      let numberKeys = Object.keys(keyCodes);
-      let keyIndex = numberCodes.indexOf(e.keyCode);
-      let numberPressed = parseInt(numberKeys[keyIndex]);
-
-      if (availableNumbers(this.filteredDigits).indexOf(numberPressed) > -1) {
-        this.digitSelected(numberPressed);
+    onKeyUp (e) {
+      if (isNumberPressed(e.keyCode, numberKeyCodes)) {
+        let numberPressed = getNumberPressed(e.keyCode, numberKeyCodes);
+        if (activeNumbers(this.filteredDigits).indexOf(numberPressed) > -1) {
+          this.digitSelected(numberPressed);
+        }
       }
-    },
-    numberPressed (e) {
-      let numberCodes = Object.values(keyCodes);
-      let numberKeys = Object.keys(keyCodes);
-      let keyIndex = numberCodes.indexOf(e.keyCode);
-      let numberPressed = parseInt(numberKeys[keyIndex]);
-      availableNumbers(this.filteredDigits);
+      if (isArrowPressed(e.keyCode, arrowKeyCodes)) {
+        let arrowPressed = getArrowPressed(e.keyCode, arrowKeyCodes);
 
-      if (availableNumbers(this.filteredDigits).indexOf(numberPressed) > -1) {
-        this.digitPressed(numberPressed);
+        this.arrowSelected(arrowPressed);
+      }
+
+      if (e.keyCode === 13 && e.target.classList.contains('timepicker')) {
+        this.close();
+      }
+
+      this.resetArrowsPressed();
+    },
+    onKeyPressed (e) {
+      if (isNumberPressed(e.keyCode, numberKeyCodes)) {
+        let numberPressed = getNumberPressed(e.keyCode, numberKeyCodes);
+        if (activeNumbers(this.filteredDigits).indexOf(numberPressed) > -1) {
+          this.digitPressed(numberPressed);
+        }
+      }
+
+      if (isArrowPressed(e.keyCode, arrowKeyCodes)) {
+        let arrowPressed = getArrowPressed(e.keyCode, arrowKeyCodes);
+        if (arrowPressed === 'left' && this.activeIndex > 0 ||
+            arrowPressed === 'right' && this.activeIndex < 3
+          ) {
+          this.arrowPressed(arrowPressed);
+        }
       }
     }
   }

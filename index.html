@@ -14,7 +14,7 @@
         align-items: center;
         justify-content: center;
         font-family: 'Open Sans', sans-serif;
-        background: #f3f3f3;
+        background: linear-gradient(to bottom right, #35013F, #902086);
       }
       input {
         font-family: 'Open Sans', sans-serif;
@@ -22,7 +22,7 @@
     </style>
   </head>
   <body>
-    <timepicker value="12:20"></timepicker>
+    <timepicker :value.sync="time"></timepicker>
     <!-- built files will be auto injected -->
   </body>
 </html>

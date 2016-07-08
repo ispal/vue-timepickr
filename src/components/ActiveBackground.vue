@@ -3,8 +3,12 @@
 </template>
 
 <script>
+import store from '../store';
+
 export default {
-  props: ['activeIndex'],
+  data () {
+    return store;
+  },
   computed: {
     transform () {
       let singleDigitWidth = 34;

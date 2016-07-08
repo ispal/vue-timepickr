@@ -1,180 +1,120 @@
 <template>
   <div class="timepicker-wrap">
-    <input type="text" class="time" value="{{ value }}"
-      @focus="isOpen = true"
+    <svg class="timepicker-icon timepicker-icon__clock" viewBox="0 0 32 32">
+      <path class="path1" d="M20.586 23.414l-6.586-6.586v-8.828h4v7.172l5.414 5.414zM16 0c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16zM16 28c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12z"></path>
+    </svg>
+    <input type="text" class="time" v-el:time-input value="{{ value }}"
+      @focus="open"
     >
     <div class="timepicker" tabindex="0"
-        @keyup.right="goToNext()"
-        @keyup.left="goToPrevious()"
-        @keyup.1="goToPrevious()"
         :class="{'is-open': isOpen}"
+        v-el:timepicker
     > 
       <div class="timepicker__header">
         Set time
       </div>
       <div class="timepicker__time">
-        <time-unit :value="timeParts[0]" index="0" :on-click="setActiveIndex"></time-unit>
-        <time-unit :value="timeParts[1]" index="1" :on-click="setActiveIndex"></time-unit>
+        <time-unit :value="time[0]" index="0"></time-unit>
+        <time-unit :value="time[1]" index="1"></time-unit>
         <div class="timepicker__separator">:</div>
-        <time-unit :value="timeParts[2]" index="2" :on-click="setActiveIndex"></time-unit>
-        <time-unit :value="timeParts[3]" index="3" :on-click="setActiveIndex"></time-unit>
-        <active-background :active-index="activeIndex"></active-background>
+        <time-unit :value="time[2]" index="2"></time-unit>
+        <time-unit :value="time[3]" index="3"></time-unit>
+        <active-background></active-background>
       </div>
-      <div class="timepicker__digits">
-        <div
-          class="timepicker__digit" 
-          v-for="digit in filteredDigits"
-        >
-          <div 
-            class="timepicker__ripple"
-            :class="{ 'is-pressed': digit.pressed }"
-          ></div>
-          <button 
-            :class="{ 'is-disabled': !digit.active}"
-            :disabled="!digit.active"
-            @click="digitSelected(digit.value)"
-            >
-            {{ digit.value }}
-          </button>
-        </div>
-      </div>
-      <div class="timepicker__arrows">
-        <div class="timepicker__digit">
-          <button 
-            :class="{ 'is-disabled': activeIndex <= 0 }"
-            :disabled="activeIndex <= 0"
-            @click="goToPrevious()"
-          >&#9664;</button>
-        </div>
-        <div class="timepicker__digit">
-          <button 
-            class="timepicker__digit"
-            :class="{ 'is-disabled': activeIndex > 2 }"
-            :disabled="activeIndex > 2"
-            @click="goToNext()"
-          >&#9658;</button>
-        </div>
-      </div>
+      <numpad :on-close="close"></numpad>
     </div>
   </div>
 </template>
 
 <script>
-import KeyboardEvents from './mixins/KeyboardEvents';
+import store from './store';
+import { getDigit, filteredDigits } from './helpers';
 
+import KeyboardEvents from './mixins/KeyboardEvents';
+import CommonActions from './mixins/CommonActions';
 import ActiveBackground from 'components/ActiveBackground';
 import TimeUnit from 'components/TimeUnit';
-
-const digits = [
-  { value: 1, active: true, pressed: false },
-  { value: 2, active: true, pressed: false },
-  { value: 3, active: true, pressed: false },
-  { value: 4, active: true, pressed: false },
-  { value: 5, active: true, pressed: false },
-  { value: 6, active: true, pressed: false },
-  { value: 7, active: true, pressed: false },
-  { value: 8, active: true, pressed: false },
-  { value: 9, active: true, pressed: false },
-  { value: 0, active: true, pressed: false }
-];
-
-function contains (array, value) {
-  return array.indexOf(value) >= 0;
-}
-
-function filterAvailableDigits (allDigits, availableDigits) {
-  allDigits.forEach(item => {
-    item.active = contains(availableDigits, item.value);
-  });
-  return allDigits;
-}
-
-function getDigit (allDigits, number) {
-  return allDigits
-          .filter(digit => digit.value === number)
-          .reduce((old, item) => {
-            return item;
-          }, {});
-}
+import Numpad from 'components/Numpad';
 
 export default {
   props: ['value'],
-  mixins: [KeyboardEvents],
+  mixins: [KeyboardEvents, CommonActions],
   components: {
     ActiveBackground,
-    TimeUnit
+    TimeUnit,
+    Numpad
   },
   data () {
-    return {
-      activeIndex: 0,
-      time: null,
-      digits: digits,
-      isOpen: false
-    };
+    return store;
   },
   created () {
     this.time = this.value.replace(':', '').split('');
   },
   computed: {
-    timeParts () {
-      return this.time;
-    },
     filteredDigits () {
-      if (this.activeIndex === 0) {
-        return filterAvailableDigits(digits, [0, 1, 2]);
-      }
-      if (this.activeIndex === 1) {
-        if (this.time[0] === 2) {
-          return filterAvailableDigits(digits, [0, 1, 2, 3]);
-        }
-        return filterAvailableDigits(digits, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-      }
-      if (this.activeIndex === 2) {
-        return filterAvailableDigits(digits, [0, 1, 2, 3, 4, 5]);
-      }
-      if (this.activeIndex === 3) {
-        return filterAvailableDigits(digits, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-      }
+      return filteredDigits(this.activeIndex, this.digits, this.time);
     }
   },
   methods: {
-    digitSelected (digit) {
-      let pressedDigit = getDigit(digits, digit);
-      pressedDigit.pressed = false;
-      this.time.$set(this.activeIndex, digit);
-      this.goToNext();
+    open () {
+      this.$els.timeInput.blur();
+      this.$els.timepicker.focus();
+      this.isOpen = true;
+    },
+    close () {
+      this.setTime();
+      this.isOpen = false;
+    },
+    setTime () {
+      this.$set('value', `${this.time[0]}${this.time[1]}:${this.time[2]}${this.time[3]}`);
     },
     digitPressed (digit) {
-      let pressedDigit = getDigit(digits, digit);
+      let pressedDigit = getDigit(this.digits, digit);
       pressedDigit.pressed = true;
     },
-    setActiveIndex (index) {
-      this.activeIndex = parseInt(index);
-    },
-    goToNext () {
-      if (this.activeIndex < 3) {
-        this.activeIndex++;
-      }
-    },
-    goToPrevious () {
-      if (this.activeIndex > 0) {
-        this.activeIndex--;
-      }
+    arrowPressed (direction) {
+      this.arrowKeys[direction].pressed = true;
     }
   }
 };
 </script>
 
 <style lang="scss">
-$header-bg: #39A9DB;
+$header-bg: #F25F5C;
 $time-bg: lighten($header-bg, 10%);
 $active-unit-bg: $header-bg;
 $digit-color: #757575;
 $border-radius: 3px;
-$input-width: 30px;
+$input-width: 34px;
 
 .timepicker-wrap {
   position: relative;
+
+  *, *::after, *::before {
+      box-sizing: border-box;
+  }
+}
+
+.time {
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 15px 10px 15px 40px;
+  border-radius: 3px;
+  font-size: 1.2rem;
+  width: 120px;
+  text-align: center;
+}
+
+.timepicker-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    stroke-width: 0;
+    stroke: currentColor;
+    fill: currentColor;
+    transform: translate(0,-50%);
 }
 
 .timepicker {
@@ -185,7 +125,7 @@ $input-width: 30px;
   border-radius: $border-radius;
   overflow: hidden;
   left: 50%;
-  top: -155px;
+  top: -135px;
   border-radius: 50%;
   transition: all .3s ease;
   transform: translate(-50%, 0) scale(0);
@@ -216,10 +156,10 @@ $input-width: 30px;
 
   &__active-bg {
     position: absolute;
-    top: 17px;
-    left: 42px;
+    top: 0;
+    left: 40px;
     width: $input-width;
-    height: 42px;
+    height: 100%;
     background: $active-unit-bg;
     transition: transform .4s ease;
   }
@@ -228,79 +168,9 @@ $input-width: 30px;
     z-index: 2;
     position: relative;
     width: $input-width;
-    padding: 0 2px;
     text-align: center;
     font-size: 90%;
   }
 
-  &__digits {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 5px 20px;
-
-    .timepicker__digit:last-of-type {
-      margin-left: auto;
-      margin-right: auto;
-    }
-  }
-
-  &__arrows {
-    display: flex;
-    flex-wrap: wrap;
-    position: absolute;
-    padding: 5px 20px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    justify-content: space-between;
-  }
-
-
-  &__digit {
-    position: relative;
-    width: 33%;
-
-    button {
-      position: relative;
-      z-index: 2;
-      display: block;
-      width: 100%;
-      padding: 15px 0;
-      text-align: center;
-      color: $digit-color;
-      background: none;
-      border: none;
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 1.3;
-      cursor: pointer;
-      transition: color .3s ease;
-
-      &.is-disabled {
-        color: rgba($digit-color, 0.3);
-      }
-
-    }
-    
-  }
-
-  &__ripple {
-    z-index: 1;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    background: rgba($header-bg, .6);
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.1);
-    transition: .3s;
-
-    &.is-pressed {
-        opacity: .3;
-        transform: translate(-50%, -50%) scale(1);
-    }
-  }
 }
 </style>

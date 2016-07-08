@@ -2,7 +2,7 @@
   <div class="time-unit" :class="transitionClasses">
     <div value="{{ value }}"
       class="time-unit__value time-unit__value--input"
-      @click="onClick(index)"
+      @click="setActiveIndex(index)"
     ></div>
     <div class="time-unit__value time-unit__value--current">{{ oldValue }}</div>
     <div class="time-unit__value time-unit__value--next">{{ nextValue }}</div>
@@ -10,8 +10,10 @@
 </template>
 
 <script>
+import store from '../store';
+
 export default {
-  props: ['value', 'index', 'onClick'],
+  props: ['value', 'index'],
   data () {
     return {
       isTransition: false,
@@ -22,7 +24,8 @@ export default {
       transitionClasses: {
         'transition-up': this.isTransition && this.transitionUp,
         'transition-down': this.isTransition && !this.transitionUp
-      }
+      },
+      store
     };
   },
   created () {
@@ -40,6 +43,9 @@ export default {
         'transition-up': this.isTransition && this.transitionUp,
         'transition-down': this.isTransition && !this.transitionUp
       };
+    },
+    setActiveIndex (index) {
+      this.store.activeIndex = parseInt(index);
     }
   },
   watch: {
@@ -62,10 +68,16 @@ export default {
 </script>
 
 <style lang="scss">
-$input-width: 30px;
+$input-width: 34px;
 
 .time-unit {
+  z-index: 4;
   position: relative;
+  transition: transform .2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
   
   &__value {
     z-index: 2;
@@ -83,18 +95,18 @@ $input-width: 30px;
     cursor: pointer;
     transition: transform .2s ease;
 
-    &:hover {
-      transform: scale(1.05);
-    }
-
     &:focus,
     &:active {
       background: transparent;
     }
   }
 
+  &__value--input {
+    z-index: 3;
+  }
+
   &__value--next {
-    z-index: 1;
+    z-index: 2;
     position: absolute;
     top: 0;
     left: 0;
@@ -145,18 +157,18 @@ $input-width: 30px;
 
 @keyframes fadeOutUp {
   from { opacity: 1; transform: translate(0, 0); }
-  to { opacity: 0; transform: translate(0, -2rem); }
+  to { opacity: 0; transform: translate(0, -2rem) scale(0.7); }
 }
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translate(0, 2rem); }
-  to { opacity: 1; transform: translate(0, 0); }
+  from { opacity: 0; transform: translate(0, 2rem) scale(0.7); }
+  to { opacity: 1; transform: translate(0, 0) scale(1); }
 }
 @keyframes fadeOutDown {
   from { opacity: 1; transform: translate(0, 0); }
-  to { opacity: 0; transform: translate(0, 2rem); }
+  to { opacity: 0; transform: translate(0, 2rem) scale(0.7); }
 }
 @keyframes fadeInDown {
-  from { opacity: 0; transform: translate(0, -2rem); }
-  to { opacity: 1; transform: translate(0, 0); }
+  from { opacity: 0; transform: translate(0, -2rem) scale(0.7); }
+  to { opacity: 1; transform: translate(0, 0) scale(1); }
 }
 </style>
