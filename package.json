@@ -4,6 +4,7 @@
   "description": "Timepicker component for Vue.js",
   "author": "Irko Palenius",
   "main": "dist/vue-timepickr.js",
+  "license": "MIT",
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
