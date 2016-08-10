@@ -1,6 +1,6 @@
 <template>
   <div class="time-unit" :class="transitionClasses">
-    <div value="{{ value }}"
+    <div :value="value"
       class="time-unit__value time-unit__value--input"
       @click="setActiveIndex(index)"
     ></div>
@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import store from '../store';
 
 export default {
@@ -33,7 +34,7 @@ export default {
   },
   methods: {
     resetState () {
-      this.$set('transitionClasses', {
+      Vue.set(this, 'transitionClasses', {
         'transition-up': false,
         'transition-down': false
       });
@@ -74,6 +75,8 @@ $input-width: 34px;
   z-index: 4;
   position: relative;
   transition: transform .2s ease;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 
   &:hover {
     transform: scale(1.1);

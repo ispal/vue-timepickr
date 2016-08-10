@@ -1,29 +1,16 @@
 <template>
   <div class="numpad">
     <div class="numpad__digits">
-      <div
-        class="numpad__digit" 
-        v-for="digit in numbers"
-      >
-        <button 
-          :class="{ 'is-disabled': !digit.active}"
-          :disabled="!digit.active"
-          @click="digitSelected(digit.value)"
-          >
-          {{ digit.value }}
-        </button>
-        <div 
-          class="numpad__ripple"
-          :class="{ 'is-pressed': digit.pressed }"
-        ></div>
-      </div>
+      <number v-for="digit in numbers" :number="digit"></number>
     </div>
     <div class="numpad__arrows">
       <div class="numpad__digit">
         <button 
           :class="{ 'is-disabled': activeIndex <= 0 }"
-          :disabled="activeIndex <= 0"
+          :disabled="activeIndex <= 0 || !this.isOpen"
           @click="goToPrevious()"
+          @mouseup="blurEl($refs.previousButton)"
+          ref="previousButton"
         >&#9664;</button>
         <div 
           class="numpad__ripple"
@@ -34,8 +21,10 @@
         <button 
           class="numpad__digit"
           :class="{ 'is-disabled': activeIndex > 2 }"
-          :disabled="activeIndex > 2"
+          :disabled="activeIndex > 2 || !this.isOpen"
           @click="goToNext()"
+          @mouseup="blurEl($refs.nextButton)"
+          ref="nextButton"
         >&#9658;</button>
         <div 
           class="numpad__ripple"
@@ -51,12 +40,12 @@ import store from '../store';
 import { filteredDigits } from '../helpers';
 import CommonActions from '../mixins/CommonActions';
 
+import Number from './Number';
+
 export default {
-  props: {
-    onClose: {
-      type: Function,
-      required: true
-    }
+  name: 'Numpad',
+  components: {
+    Number
   },
   mixins: [CommonActions],
   data () {
@@ -118,6 +107,8 @@ export default {
         cursor: pointer;
         transition: color .3s ease;
         outline: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
 
         &.is-disabled {
           color: rgba($digit-color, 0.3);
@@ -125,6 +116,7 @@ export default {
 
         &:focus + .numpad__ripple {
           opacity: .3;
+          transform: translate(-50%, -50%) scale(1);
         }
 
       }
@@ -136,7 +128,7 @@ export default {
       position: absolute;
       left: 50%;
       top: 50%;
-      background: rgba($header-bg, .6);
+      background: rgba(#000, .2);
       border-radius: 50%;
       width: 45px;
       height: 45px;

@@ -39,7 +39,7 @@ function isArrowPressed (keyCode, arrowKeyCodes) {
 }
 
 export default {
-  ready () {
+  mounted () {
     this.$el.addEventListener('keyup', this.onKeyUp);
     this.$el.addEventListener('keydown', this.onKeyPressed);
   },
@@ -59,7 +59,6 @@ export default {
       }
       if (isArrowPressed(e.keyCode, arrowKeyCodes)) {
         let arrowPressed = getArrowPressed(e.keyCode, arrowKeyCodes);
-
         this.arrowSelected(arrowPressed);
       }
 
@@ -78,6 +77,7 @@ export default {
       }
 
       if (isArrowPressed(e.keyCode, arrowKeyCodes)) {
+        e.preventDefault();
         let arrowPressed = getArrowPressed(e.keyCode, arrowKeyCodes);
         if (arrowPressed === 'left' && this.activeIndex > 0 ||
             arrowPressed === 'right' && this.activeIndex < 3

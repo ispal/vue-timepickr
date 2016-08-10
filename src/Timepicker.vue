@@ -3,12 +3,12 @@
     <svg class="timepicker-icon timepicker-icon__clock" viewBox="0 0 32 32">
       <path class="path1" d="M20.586 23.414l-6.586-6.586v-8.828h4v7.172l5.414 5.414zM16 0c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16zM16 28c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12z"></path>
     </svg>
-    <input type="text" class="time" v-el:time-input value="{{ value }}"
+    <input type="text" class="time" ref="timeInput" :value="value"
       @focus="open"
     >
     <div class="timepicker" tabindex="0"
         :class="{'is-open': isOpen}"
-        v-el:timepicker
+        ref="timepicker"
     > 
       <div class="timepicker__header">
         Set time
@@ -21,14 +21,14 @@
         <time-unit :value="time[3]" index="3"></time-unit>
         <active-background></active-background>
       </div>
-      <numpad :on-close="close"></numpad>
+      <numpad></numpad>
     </div>
   </div>
 </template>
 
 <script>
 import store from './store';
-import { getDigit, filteredDigits } from './helpers';
+import { filteredDigits } from './helpers';
 
 import KeyboardEvents from './mixins/KeyboardEvents';
 import CommonActions from './mixins/CommonActions';
@@ -37,6 +37,7 @@ import TimeUnit from 'components/TimeUnit';
 import Numpad from 'components/Numpad';
 
 export default {
+  name: 'Timepicker',
   props: ['value'],
   mixins: [KeyboardEvents, CommonActions],
   components: {
@@ -49,6 +50,7 @@ export default {
   },
   created () {
     this.time = this.value.replace(':', '').split('');
+    this.$on('close', this.close);
   },
   computed: {
     filteredDigits () {
@@ -57,23 +59,18 @@ export default {
   },
   methods: {
     open () {
-      this.$els.timeInput.blur();
-      this.$els.timepicker.focus();
+      this.$refs.timeInput.blur();
+      this.$refs.timepicker.focus();
       this.isOpen = true;
+      this.activeIndex = 0;
     },
     close () {
       this.setTime();
+      this.$refs.timepicker.blur();
       this.isOpen = false;
     },
     setTime () {
-      this.$set('value', `${this.time[0]}${this.time[1]}:${this.time[2]}${this.time[3]}`);
-    },
-    digitPressed (digit) {
-      let pressedDigit = getDigit(this.digits, digit);
-      pressedDigit.pressed = true;
-    },
-    arrowPressed (direction) {
-      this.arrowKeys[direction].pressed = true;
+      this.$emit('input', `${this.time[0]}${this.time[1]}:${this.time[2]}${this.time[3]}`);
     }
   }
 };
@@ -137,7 +134,6 @@ $input-width: 34px;
     border-radius: $border-radius;
     pointer-events: auto;
   }
-
   &__header {
     padding: 5px 15px;
     font-size: 14px;

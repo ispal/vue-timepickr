@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { getDigit, activeNumbers } from '../helpers';
 
 export default {
@@ -6,17 +7,20 @@ export default {
       this.arrowKeys.left.pressed = false;
       this.arrowKeys.right.pressed = false;
     },
+    digitPressed (digit) {
+      let pressedDigit = getDigit(this.digits, digit);
+      pressedDigit.pressed = true;
+    },
+    arrowPressed (direction) {
+      this.arrowKeys[direction].pressed = true;
+    },
     digitSelected (digit) {
       getDigit(this.digits, digit).pressed = false;
-      this.time.$set(this.activeIndex, digit);
+
+      Vue.set(this.time, this.activeIndex, digit);
 
       if (this.activeIndex === 3) {
-        if (typeof this.close === 'function') {
-          this.close();
-        }
-        if (typeof this.onClose === 'function') {
-          this.onClose();
-        }
+        this.$emit('close');
       }
 
       this.goToNext();
@@ -31,15 +35,14 @@ export default {
 
       if (direction === 'up') {
         let nextValue = parseInt(this.time[this.activeIndex]) + 1;
-        console.log(activeNumbers(this.filteredDigits));
         if (activeNumbers(this.filteredDigits).indexOf(nextValue) > -1) {
-          this.time.$set(this.activeIndex, nextValue);
+          Vue.set(this.time, this.activeIndex, nextValue);
         }
       }
       if (direction === 'down') {
         let nextValue = parseInt(this.time[this.activeIndex]) - 1;
         if (activeNumbers(this.filteredDigits).indexOf(nextValue) > -1) {
-          this.time.$set(this.activeIndex, nextValue);
+          Vue.set(this.time, this.activeIndex, nextValue);
         }
       }
     },
@@ -52,6 +55,9 @@ export default {
       if (this.activeIndex > 0) {
         this.activeIndex--;
       }
+    },
+    blurEl (el) {
+      el.blur();
     }
   }
 };

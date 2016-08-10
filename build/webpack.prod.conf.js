@@ -14,6 +14,10 @@ base.output = {
   libraryTarget: 'umd'
 };
 
+base.externals = {
+  'vue': 'Vue'
+};
+
 var webpackConfig = Object.assign({}, base);
 
 webpackConfig.devtool = '#source-map';
