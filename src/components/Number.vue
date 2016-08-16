@@ -7,7 +7,7 @@
       @mousedown="digitPressed(number.value)"
       @mouseup="blurEl($refs.numButton)"
       @touchstart="digitPressed(number.value)"
-      @touchend="digitPressed(number.value)"
+      @touchend="digitSelected(number.value)"
       ref="numButton"
       >
       {{ number.value }}

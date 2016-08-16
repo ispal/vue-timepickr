@@ -20,6 +20,8 @@ const arrowKeyCodes = {
   'down': 40
 };
 
+const escKey = 27;
+
 function isNumberPressed (keyCode, numberKeyCodes) {
   return Object.values(numberKeyCodes).indexOf(keyCode) > -1;
 }
@@ -40,17 +42,27 @@ function isArrowPressed (keyCode, arrowKeyCodes) {
 
 export default {
   mounted () {
-    this.$el.addEventListener('keyup', this.onKeyUp);
-    this.$el.addEventListener('keydown', this.onKeyPressed);
+    window.addEventListener('keyup', this.onKeyUp);
+    window.addEventListener('keydown', this.onKeyPressed);
+    window.addEventListener('keyup', e => {
+      if (e.keyCode === escKey) {
+        this.close(true);
+      }
+    });
   },
 
   beforeDestroy () {
-    this.$el.removeEventListener('keyup');
-    this.$el.removeEventListener('keydown');
+    window.removeEventListener('keyup', this.onKeyUp);
+    window.removeEventListener('keydown', this.onKeyPressed);
+    window.addEventListener('keyup', this.close);
   },
 
   methods: {
     onKeyUp (e) {
+      if (!this.isOpen) {
+        return;
+      }
+
       if (isNumberPressed(e.keyCode, numberKeyCodes)) {
         let numberPressed = getNumberPressed(e.keyCode, numberKeyCodes);
         if (activeNumbers(this.filteredDigits).indexOf(numberPressed) > -1) {
@@ -69,6 +81,9 @@ export default {
       this.resetArrowsPressed();
     },
     onKeyPressed (e) {
+      if (!this.isOpen) {
+        return;
+      }
       if (isNumberPressed(e.keyCode, numberKeyCodes)) {
         let numberPressed = getNumberPressed(e.keyCode, numberKeyCodes);
         if (activeNumbers(this.filteredDigits).indexOf(numberPressed) > -1) {

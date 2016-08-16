@@ -10,8 +10,14 @@
           :disabled="activeIndex <= 0 || !this.isOpen"
           @click="goToPrevious()"
           @mouseup="blurEl($refs.previousButton)"
+          @touchstart="arrowPressed('left')"
+          @touchend="goToPrevious()"
           ref="previousButton"
-        >&#9664;</button>
+        >
+          <svg viewBox="0 0 32 32" class="triangle">
+            <path class="path1" d="M22.4 8v16l-14.4-8 14.4-8z"></path>
+          </svg>
+        </button>
         <div 
           class="numpad__ripple"
           :class="{ 'is-pressed': arrowKeys.left.pressed }"
@@ -19,13 +25,18 @@
       </div>
       <div class="numpad__digit">
         <button 
-          class="numpad__digit"
           :class="{ 'is-disabled': activeIndex > 2 }"
           :disabled="activeIndex > 2 || !this.isOpen"
           @click="goToNext()"
           @mouseup="blurEl($refs.nextButton)"
+          @touchstart="arrowPressed('right')"
+          @touchend="goToNext()"
           ref="nextButton"
-        >&#9658;</button>
+        >
+          <svg viewBox="0 0 32 32" class="triangle">
+            <path class="path1" d="M24 16l-14.4 8v-16l14.4 8z"></path>
+          </svg>
+        </button>
         <div 
           class="numpad__ripple"
           :class="{ 'is-pressed': arrowKeys.right.pressed }"
@@ -62,6 +73,16 @@ export default {
 <style lang="scss">
   $header-bg: #F25F5C;
   $digit-color: #757575;
+  $mobile-breakpoint:   480px;
+
+  .triangle {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    stroke-width: 0;
+    stroke: currentColor;
+    fill: currentColor;
+  }
 
   .numpad {
 
@@ -76,17 +97,6 @@ export default {
       }
     } 
 
-    &__arrows {
-      display: flex;
-      flex-wrap: wrap;
-      position: absolute;
-      padding: 5px 20px;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      justify-content: space-between;
-    }
-
     &__digit {
       position: relative;
       width: 33%;
@@ -96,7 +106,7 @@ export default {
         z-index: 2;
         display: block;
         width: 100%;
-        padding: 15px 0;
+        padding: 20px 0;
         text-align: center;
         color: $digit-color;
         background: none;
@@ -109,6 +119,10 @@ export default {
         outline: none;
         -webkit-user-select: none;
         -webkit-tap-highlight-color: rgba(0,0,0,0);
+
+        @media (min-width: $mobile-breakpoint) { 
+          padding: 15px 0;
+        }
 
         &.is-disabled {
           color: rgba($digit-color, 0.3);
@@ -123,6 +137,27 @@ export default {
       
     }
 
+    &__arrows {
+      display: flex;
+      flex-wrap: wrap;
+      position: absolute;
+      padding: 5px 20px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      justify-content: space-between;
+
+      button {
+        font-size: 25px;
+        padding: 17px 0 13px 0;
+        line-height: 1;
+
+        @media (min-width: $mobile-breakpoint) { 
+          padding: 13px 0 8px 0;
+        }
+      }
+    }
+
     &__ripple {
       z-index: 1;
       position: absolute;
@@ -130,11 +165,16 @@ export default {
       top: 50%;
       background: rgba(#000, .2);
       border-radius: 50%;
-      width: 45px;
-      height: 45px;
+      width: 55px;
+      height: 55px;
       opacity: 0;
       transform: translate(-50%, -50%) scale(1.1);
       transition: .3s;
+
+      @media (min-width: $mobile-breakpoint) { 
+        width: 45px;
+        height: 45px;
+      }
 
       &.is-pressed {
           opacity: .3;

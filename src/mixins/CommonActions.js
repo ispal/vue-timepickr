@@ -20,7 +20,11 @@ export default {
       Vue.set(this.time, this.activeIndex, digit);
 
       if (this.activeIndex === 3) {
-        this.$emit('close');
+        if (this.$parent.$parent === undefined) {
+          this.$emit('close');
+        } else {
+          this.$parent.$parent.$emit('close');
+        }
       }
 
       this.goToNext();
@@ -49,11 +53,13 @@ export default {
     goToNext () {
       if (this.activeIndex < 3) {
         this.activeIndex++;
+        this.arrowKeys['right'].pressed = false;
       }
     },
     goToPrevious () {
       if (this.activeIndex > 0) {
         this.activeIndex--;
+        this.arrowKeys['left'].pressed = false;
       }
     },
     blurEl (el) {

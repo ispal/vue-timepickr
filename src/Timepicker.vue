@@ -14,12 +14,14 @@
         Set time
       </div>
       <div class="timepicker__time">
-        <time-unit :value="time[0]" index="0"></time-unit>
-        <time-unit :value="time[1]" index="1"></time-unit>
-        <div class="timepicker__separator">:</div>
-        <time-unit :value="time[2]" index="2"></time-unit>
-        <time-unit :value="time[3]" index="3"></time-unit>
-        <active-background></active-background>
+        <div class="flex-wrap">
+          <time-unit :value="time[0]" index="0"></time-unit>
+          <time-unit :value="time[1]" index="1"></time-unit>
+          <div class="timepicker__separator">:</div>
+          <time-unit :value="time[2]" index="2"></time-unit>
+          <time-unit :value="time[3]" index="3"></time-unit>
+          <active-background></active-background>
+        </div>
       </div>
       <numpad></numpad>
     </div>
@@ -59,13 +61,18 @@ export default {
   },
   methods: {
     open () {
+      this.time = this.value.replace(':', '').split('');
       this.$refs.timeInput.blur();
       this.$refs.timepicker.focus();
       this.isOpen = true;
       this.activeIndex = 0;
     },
-    close () {
-      this.setTime();
+    close (cancel) {
+      let isCancelled = cancel || false;
+
+      if (!isCancelled) {
+        this.setTime();
+      }
       this.$refs.timepicker.blur();
       this.isOpen = false;
     },
@@ -77,12 +84,13 @@ export default {
 </script>
 
 <style lang="scss">
-$header-bg: #F25F5C;
-$time-bg: lighten($header-bg, 10%);
-$active-unit-bg: $header-bg;
-$digit-color: #757575;
-$border-radius: 3px;
-$input-width: 34px;
+$header-bg:           #F25F5C;
+$time-bg:             lighten($header-bg, 10%);
+$active-unit-bg:      $header-bg;
+$digit-color:         #757575;
+$border-radius:       3px;
+$input-width:         34px;
+$mobile-breakpoint:   480px;
 
 .timepicker-wrap {
   display: inline-block;
@@ -102,6 +110,11 @@ $input-width: 34px;
   text-align: center;
 }
 
+.flex-wrap {
+  display: flex;
+  position: relative;
+}
+
 .timepicker-icon {
     position: absolute;
     left: 15px;
@@ -118,7 +131,7 @@ $input-width: 34px;
 .timepicker {
   position: absolute;
   background: #FBFBFF;
-  width: 250px;
+  width: 100vw;
   box-shadow: 0 3px 10px rgba(0,0,0,.3);
   border-radius: $border-radius;
   overflow: hidden;
@@ -126,11 +139,16 @@ $input-width: 34px;
   top: -135px;
   border-radius: 50%;
   transition: all .3s ease;
-  transform: translate(-50%, 0) scale(0);
+  transform: translate3d(-50%, 0, 0) scale(0);
   pointer-events: none;
 
+  @media (min-width: $mobile-breakpoint) { 
+    width: 250px;
+    border-radius: 0;
+  }
+
   &.is-open {
-    transform: translate(-50%, 0) scale(1);
+    transform: translate3d(-50%, 0, 0) scale(1);
     border-radius: $border-radius;
     pointer-events: auto;
   }
@@ -142,6 +160,7 @@ $input-width: 34px;
   }
   &__time {
     position: relative;
+    overflow: hidden;
     background: $time-bg;
     display: flex;
     justify-content: center;
@@ -153,10 +172,10 @@ $input-width: 34px;
 
   &__active-bg {
     position: absolute;
-    top: 0;
-    left: 40px;
+    top: -25%;
+    left: 0;
     width: $input-width;
-    height: 100%;
+    height: 200%;
     background: $active-unit-bg;
     transition: transform .4s ease;
   }

@@ -17,7 +17,7 @@ export default {
                     : this.activeIndex * singleDigitWidth + singleDigitWidth;
 
       return {
-        transform: `translate(${offset}px, 0)`
+        transform: `translate3d(${offset}px, 0, 0)`
       };
     }
   }
