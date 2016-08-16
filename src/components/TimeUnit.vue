@@ -83,25 +83,25 @@ $input-width: 34px;
 
     &-enter {
       opacity: 0;
-      transform: translate(0, 2rem) scale(.7);
+      transform: translate3d(0, 2rem, 0) scale(.7);
     }
 
     &-leave-active {
       position: absolute;
       opacity: 0;
-      transform: translate(0, -2rem) scale(.7);
+      transform: translate3d(0, -2rem, 0) scale(.7);
     }
 
     &--reverse {
       &-enter {
         opacity: 0;
-        transform: translate(0, -2rem) scale(.7);
+        transform: translate3d(0, -2rem, 0) scale(.7);
       }
 
       &-leave-active {
         position: absolute;
         opacity: 0;
-        transform: translate(0, 2rem) scale(.7);
+        transform: translate3d(0, 2rem, 0) scale(.7);
       }
     }
   }
