@@ -9,7 +9,7 @@
     <div class="timepicker" tabindex="0"
         :class="{'is-open': isOpen}"
         ref="timepicker"
-    > 
+    >
       <div class="timepicker__header">
         Set time
       </div>
@@ -142,7 +142,7 @@ $mobile-breakpoint:   480px;
   transform: translate3d(-50%, 0, 0) scale(0);
   pointer-events: none;
 
-  @media (min-width: $mobile-breakpoint) { 
+  @media (min-width: $mobile-breakpoint) {
     width: 250px;
     border-radius: 0;
   }

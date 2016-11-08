@@ -17,15 +17,21 @@ export function getDigit (allDigits, number) {
           }, {});
 }
 
+export function convertToNumber (number) {
+  return Number(number);
+}
+
 export function filteredDigits (index, digits, time) {
+  let timeIntegers = time.map(convertToNumber);
+
   if (index === 0) {
-    if (time[1] > 3) {
+    if (timeIntegers[1] > 3) {
       return filterAvailableDigits(digits, [0, 1]);
     }
     return filterAvailableDigits(digits, [0, 1, 2]);
   }
   if (index === 1) {
-    if (time[0] === 2) {
+    if (timeIntegers[0] === 2) {
       return filterAvailableDigits(digits, [0, 1, 2, 3]);
     }
     return filterAvailableDigits(digits, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);

@@ -3,7 +3,7 @@ import Timepicker from './Timepicker';
 
 /* eslint-disable no-new */
 new Vue({
-  el: 'body',
+  el: '#app',
   data: {
     time: '13:20'
   },
