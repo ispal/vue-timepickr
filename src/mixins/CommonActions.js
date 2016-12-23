@@ -1,4 +1,4 @@
-import Vue from 'vue';
+
 import { getDigit, activeNumbers } from '../helpers';
 
 export default {
@@ -14,10 +14,19 @@ export default {
     arrowPressed (direction) {
       this.arrowKeys[direction].pressed = true;
     },
-    digitSelected (digit) {
+    digitSelected (digit, evt) {
+      if (evt) {
+        evt.preventDefault();
+      }
+
+      if (!getDigit(this.digits, digit).active) {
+        getDigit(this.digits, digit).pressed = false;
+        return;
+      }
+
       getDigit(this.digits, digit).pressed = false;
 
-      Vue.set(this.time, this.activeIndex, digit);
+      this.$set(this.time, this.activeIndex, digit);
 
       if (this.activeIndex === 3) {
         if (this.$parent.$parent === undefined) {
@@ -40,23 +49,29 @@ export default {
       if (direction === 'up') {
         let nextValue = parseInt(this.time[this.activeIndex]) + 1;
         if (activeNumbers(this.filteredDigits).indexOf(nextValue) > -1) {
-          Vue.set(this.time, this.activeIndex, nextValue);
+          this.$set(this.time, this.activeIndex, nextValue);
         }
       }
       if (direction === 'down') {
         let nextValue = parseInt(this.time[this.activeIndex]) - 1;
         if (activeNumbers(this.filteredDigits).indexOf(nextValue) > -1) {
-          Vue.set(this.time, this.activeIndex, nextValue);
+          this.$set(this.time, this.activeIndex, nextValue);
         }
       }
     },
-    goToNext () {
+    goToNext (evt) {
+      if (evt) {
+        evt.preventDefault();
+      }
       if (this.activeIndex < 3) {
         this.activeIndex++;
         this.arrowKeys['right'].pressed = false;
       }
     },
-    goToPrevious () {
+    goToPrevious (evt) {
+      if (evt) {
+        evt.preventDefault();
+      }
       if (this.activeIndex > 0) {
         this.activeIndex--;
         this.arrowKeys['left'].pressed = false;

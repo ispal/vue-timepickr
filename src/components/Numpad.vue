@@ -5,39 +5,39 @@
     </div>
     <div class="numpad__arrows">
       <div class="numpad__digit">
-        <button 
+        <button
           :class="{ 'is-disabled': activeIndex <= 0 }"
           :disabled="activeIndex <= 0 || !this.isOpen"
           @click="goToPrevious()"
           @mouseup="blurEl($refs.previousButton)"
           @touchstart="arrowPressed('left')"
-          @touchend="goToPrevious()"
+          @touchend="goToPrevious"
           ref="previousButton"
         >
           <svg viewBox="0 0 32 32" class="triangle">
             <path class="path1" d="M22.4 8v16l-14.4-8 14.4-8z"></path>
           </svg>
         </button>
-        <div 
+        <div
           class="numpad__ripple"
           :class="{ 'is-pressed': arrowKeys.left.pressed }"
         ></div>
       </div>
       <div class="numpad__digit">
-        <button 
+        <button
           :class="{ 'is-disabled': activeIndex > 2 }"
           :disabled="activeIndex > 2 || !this.isOpen"
           @click="goToNext()"
           @mouseup="blurEl($refs.nextButton)"
           @touchstart="arrowPressed('right')"
-          @touchend="goToNext()"
+          @touchend="goToNext"
           ref="nextButton"
         >
           <svg viewBox="0 0 32 32" class="triangle">
             <path class="path1" d="M24 16l-14.4 8v-16l14.4 8z"></path>
           </svg>
         </button>
-        <div 
+        <div
           class="numpad__ripple"
           :class="{ 'is-pressed': arrowKeys.right.pressed }"
         ></div>
@@ -95,7 +95,7 @@ export default {
         margin-left: auto;
         margin-right: auto;
       }
-    } 
+    }
 
     &__digit {
       position: relative;
@@ -120,7 +120,7 @@ export default {
         -webkit-user-select: none;
         -webkit-tap-highlight-color: rgba(0,0,0,0);
 
-        @media (min-width: $mobile-breakpoint) { 
+        @media (min-width: $mobile-breakpoint) {
           padding: 15px 0;
         }
 
@@ -134,7 +134,7 @@ export default {
         }
 
       }
-      
+
     }
 
     &__arrows {
@@ -152,7 +152,7 @@ export default {
         padding: 17px 0 13px 0;
         line-height: 1;
 
-        @media (min-width: $mobile-breakpoint) { 
+        @media (min-width: $mobile-breakpoint) {
           padding: 13px 0 8px 0;
         }
       }
@@ -171,7 +171,7 @@ export default {
       transform: translate(-50%, -50%) scale(1.1);
       transition: .3s;
 
-      @media (min-width: $mobile-breakpoint) { 
+      @media (min-width: $mobile-breakpoint) {
         width: 45px;
         height: 45px;
       }

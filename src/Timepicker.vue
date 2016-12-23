@@ -137,9 +137,9 @@ $mobile-breakpoint:   480px;
   overflow: hidden;
   left: 50%;
   top: -135px;
-  border-radius: 50%;
-  transition: all .3s ease;
-  transform: translate3d(-50%, 0, 0) scale(0);
+  opacity: 0;
+  transition: transform .2s .2s ease-in-out, opacity .2s .15s ease-in-out;
+  transform: translate3d(-50%, 0, 0) scale(0.8);
   pointer-events: none;
 
   @media (min-width: $mobile-breakpoint) {
@@ -147,10 +147,30 @@ $mobile-breakpoint:   480px;
     border-radius: 0;
   }
 
+  &:before {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: #fff;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: transform .2s ease-in-out;
+  }
+
   &.is-open {
+    opacity: 1;
     transform: translate3d(-50%, 0, 0) scale(1);
-    border-radius: $border-radius;
     pointer-events: auto;
+
+    &:before {
+      border-radius: $border-radius;
+      transform: scale(1);
+    }
   }
   &__header {
     padding: 5px 15px;

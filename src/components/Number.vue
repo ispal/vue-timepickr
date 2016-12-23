@@ -1,18 +1,17 @@
 <template>
   <div class="numpad__digit" >
-    <button 
+    <button
       :class="{ 'is-disabled': !number.active }"
-      :disabled="!number.active || !this.isOpen"
-      @click="digitSelected(number.value)"
+      :disabled="isDisabled"
       @mousedown="digitPressed(number.value)"
-      @mouseup="blurEl($refs.numButton)"
+      @mouseup="digitSelected(number.value, $event) && blurEl($refs.numButton)"
       @touchstart="digitPressed(number.value)"
-      @touchend="digitSelected(number.value)"
+      @touchend="digitSelected(number.value, $event)"
       ref="numButton"
       >
       {{ number.value }}
     </button>
-    <div 
+    <div
       class="numpad__ripple"
       :class="{ 'is-pressed': number.pressed }"
     ></div>
@@ -34,6 +33,11 @@ export default {
   mixins: [CommonActions],
   data () {
     return store;
+  },
+  computed: {
+    isDisabled () {
+      !this.number.active || !this.isOpen;
+    }
   }
 };
 </script>

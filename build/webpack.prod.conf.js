@@ -5,14 +5,14 @@ const utils = require('./utils');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 base.entry = {
-  lib: './src/Timepicker.vue'
+  lib: './src/main.js'
 };
 
 base.output = {
   path: config.build.assetsRoot,
   publicPath: config.build.assetsPublicPath,
   filename: 'vue-timepickr.js',
-  library: 'vue-timepickr',
+  library: 'VueTimepickr',
   libraryTarget: 'umd'
 };
 
